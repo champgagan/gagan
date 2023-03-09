@@ -6,7 +6,7 @@ res.end();
 });
 
 server.listen(3000,()=>{
-console.log("server started on port 3000");
+console.log("node server started on port 3000");
 });
 
 
