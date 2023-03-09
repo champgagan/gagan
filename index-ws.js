@@ -15,6 +15,12 @@ server.listen(3000, function () {
 
 /** Begin websocket */
 
+process.on("SIGINT", () => {
+  server.close(() => {
+    shutdownDB();
+  });
+});
+
 const webSocketServer = require("ws").server;
 const wss = new WebSocketServer({ server: server });
 
@@ -26,6 +32,10 @@ wss.on("connection", function connection(ws) {
     ws.send("welcome to my server");
   }
 
+  db.run(`INSERT INTO visitors (count,time)
+   VALUES (${numClients},datetime('now'))
+  `);
+
   ws.on("close", function close() {
     console.log("A client has disconnected");
   });
@@ -36,3 +46,27 @@ wss.broadcast = function broadcast(data) {
     client.send(data);
   });
 };
+
+const sqlite = require("sqlite3");
+const db = new sqlite.Database(":memory:");
+
+db.serialize(() => {
+  db.run(`
+   CREATE TABLE visitors (
+     count INTEGER,
+     time TEXT
+   )
+ `);
+});
+
+function getCounts() {
+  db.each("SELECT * FROM visitors", (err, row) => {
+    console.log(row);
+  });
+}
+
+function shutdownDB() {
+  getCounts();
+  console.log(`sutting down db`);
+  db.close();
+}

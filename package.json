@@ -10,6 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
+<<<<<<< Updated upstream
+=======
+    "sqlite3": "^5.1.4",
+>>>>>>> Stashed changes
     "ws": "^8.12.1"
   }
 }
